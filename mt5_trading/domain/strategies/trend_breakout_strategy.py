@@ -157,7 +157,8 @@ class TrendBreakoutStrategy(TradingStrategy):
             return symbol, Signal.NONE
         
         # Identify support and resistance
-        support, resistance = self.identify_support_resistance(df)
+        # The signal bar must be able to break the PREVIOUS range.
+        support, resistance = self.identify_support_resistance(df.iloc[:-1])
         
         if support == 0.0 or resistance == 0.0:
             symbol = self.data.get_symbol()
