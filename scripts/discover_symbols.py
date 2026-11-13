@@ -11,6 +11,8 @@ import yaml
 from pathlib import Path
 from typing import Dict, List
 import MetaTrader5 as mt5
+if __import__("os").environ.get("EXNESS_BOT_ID"):
+    from exness_arena import mt5
 from dotenv import load_dotenv
 from loguru import logger
 

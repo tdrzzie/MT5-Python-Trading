@@ -1,4 +1,6 @@
 import MetaTrader5 as mt5
+if __import__("os").environ.get("EXNESS_BOT_ID"):
+    from exness_arena import mt5
 import pandas as pd
 from loguru import logger
 

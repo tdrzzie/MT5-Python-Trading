@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import MetaTrader5 as mt5
+if __import__("os").environ.get("EXNESS_BOT_ID"):
+    from exness_arena import mt5
 from loguru import logger
 
 

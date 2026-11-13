@@ -1,4 +1,6 @@
 import MetaTrader5 as mt5
+if __import__("os").environ.get("EXNESS_BOT_ID"):
+    from exness_arena import mt5
 from loguru import logger
 
 from mt5_trading.adapters import Trader, TradingStrategy
@@ -45,7 +47,7 @@ class CrossOverRobot:
         self.volume = volume
         self.trader = trader
         self.strategy = strategy
-        self.magic_number = 20240100
+        self.magic_number = 26111302
         self.name = 'Cross Over'
         logger.info("Starting CrossOver Robot")
 

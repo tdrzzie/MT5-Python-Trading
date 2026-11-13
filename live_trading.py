@@ -14,6 +14,8 @@ import sched
 import threading
 from dotenv import load_dotenv
 import MetaTrader5 as mt5
+if __import__("os").environ.get("EXNESS_BOT_ID"):
+    from exness_arena import mt5
 from loguru import logger
 
 from mt5_trading.domain import MT5Trader

@@ -1,4 +1,6 @@
 import MetaTrader5 as mt5
+if __import__("os").environ.get("EXNESS_BOT_ID"):
+    from exness_arena import mt5
 from typing import Dict, Tuple
 from loguru import logger
 
@@ -37,7 +39,7 @@ class MultiSymbolRobot:
         self.risk_manager = risk_manager
         self.default_lot_size = default_lot_size
         self.stop_loss_pips = stop_loss_pips
-        self.magic_number = 20240101
+        self.magic_number = 26111302
         self.name = 'Multi-Symbol Robot'
         
         logger.info(f"Initialized {self.name} with {len(strategies)} symbols")
