@@ -53,6 +53,12 @@ Original protection is used where the source strategy supplies executable price 
 
 Every strategy has a stable identity and magic in `Monn/exness_arena/registry.json`. The shared journal attributes deals and positions by original opening ownership and stable position ID, including partial closes and manual exits. Results remain separate by repository and strategy. The tracker exports `results.csv`, `strategies.csv` and `positions.csv` under the local `Monn/.exness-arena/` directory.
 
+## Research logging and shadow testing
+
+The local `Monn/.exness-arena/research.sqlite3` records durable decisions (including no-signal outcomes), exact compressed closed-bar inputs, quotes/contracts, available features, blocked proposals, code/configuration/dependency/artifact versions and sampled live trade paths. New live trades are linked by their actual opening order/deal; older unmatched versions remain unknown. The live journal and ownership records remain separate.
+
+Paper-only shadows compare the proposed exit with 1R and 3R targets using the same stop and risk-sized volume, with a 24-hour elapsed-time horizon checked on eligible closed bars. They continue observing proposals while the live drawdown halt remains enforced. These are independent per-signal counterfactuals, not a portfolio simulation: they do not simulate live loss/addition gates. Results include spread but exclude fees, swap and extra slippage. Conservative OHLC handling and sampled paths limit precision. No variant changes live parameters or places an order. See `Monn/RESEARCH.md` for schemas, methodology, limitations and export commands. The dashboard and `/api/research` show paper results separately from live performance.
+
 ## Operation and documentation
 
 Dashboard: http://127.0.0.1:8765 . Runtime settings, account pins, credentials, baseline and journal stay local in `Monn/.exness-arena/` and are excluded from Git. The local settings are authoritative; these guides intentionally omit account identifiers and credentials.
