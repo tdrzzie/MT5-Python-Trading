@@ -59,6 +59,10 @@ The local `Monn/.exness-arena/research.sqlite3` records durable decisions (inclu
 
 Paper-only shadows compare the proposed exit with 1R and 3R targets using the same stop and risk-sized volume, with a 24-hour elapsed-time horizon checked on eligible closed bars. They continue observing proposals while the live drawdown halt remains enforced. These are independent per-signal counterfactuals, not a portfolio simulation: they do not simulate live loss/addition gates. Results include spread but exclude fees, swap and extra slippage. Conservative OHLC handling and sampled paths limit precision. No variant changes live parameters or places an order. See `Monn/RESEARCH.md` for schemas, methodology, limitations and export commands. The dashboard and `/api/research` show paper results separately from live performance.
 
+## Dashboard
+
+The local Arena dashboard at `http://127.0.0.1:8765/` has separate Overview, Strategies, Positions, Research, Market monitoring and Activity views, with repository/strategy filtering, search, sorting, pagination, USC/USD presentation, observed P&L charts, ownership details and local CSV downloads. The account view includes external exposure; strategy results exclude it. Live halt status and stale data warnings remain visible. Paper experiments stay separate by strategy, version and cohort. No trading, configuration or halt-reset controls are exposed. See `Monn/DASHBOARD.md` for value definitions, export scope, read-only routes and collector-only reload instructions.
+
 ## Operation and documentation
 
 Dashboard: http://127.0.0.1:8765 . Runtime settings, account pins, credentials, baseline and journal stay local in `Monn/.exness-arena/` and are excluded from Git. The local settings are authoritative; these guides intentionally omit account identifiers and credentials.
