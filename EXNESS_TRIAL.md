@@ -37,6 +37,20 @@ Every position requires a broker-valued server-side stop. Stop removal/widening,
 
 Missing account/history state, unavailable stop valuation, stale quotes, a missing/stale tracker heartbeat (90 seconds), unexpected trial pending orders and ambiguous submissions block new risk. Strategy evaluation failures quarantine only that strategy. Halts, quarantines, loss history and equity baselines never reset automatically on restart or a rule change.
 
+### Stop-loss and take-profit policy
+
+Original protection is used where the source strategy supplies executable price rules. Strategies without standalone price protection retain the explicit existing safety fallback; they are not described as having unique native SL/TP. A missing or invalid supported native stop skips the signal. All levels remain subject to the same broker validation and 3.50 USC risk ceiling; stops are never changed just to force a trade to fit.
+
+| Strategy group | Protection mode for new entries | Source rules and limitations |
+|---|---|---|
+| Monn | original | All eight configured strategy orders retain their original SL and optional TP, including original fix_order/max_sl_pct configuration. No TP is added when absent. |
+| mt5_live_trading_bot | original | All eight Sunrise profiles retain their original stop_level and take_level. |
+| Forex-Trading-Bot | original | SuperTrend retains its original average-line TP and reward/1.2 SL formula. |
+| tradingbot/donchian | original stop, no fixed TP | Native Donchian state machine exposes its fixed original entry-close +/- stop_atr * ATR(atr_n) stop: defaults 2.5 * ATR(48). Reuse that original signal-entry anchor for additions, not a new ATR stop. Convert mid level to bid/ask trigger using current half-spread. No fixed TP exists, so new orders carry TP=0. Missing/invalid native stops skip entries without fallback. The broker stop can trigger intrabar; upstream state uses closed-bar comparisons. |
+| tradingbot/other | explicit protective fallback | ema_cross, tsmom, kalman_trend, zscore_fade, rsi2, bollinger_revert, vol_squeeze, orb and managed_gold expose forecasts/state exits rather than standalone broker SL/TP rules. Retain the existing 2 * ATR(14) SL and 4 * ATR(14) TP. |
+| MT5-Python-Trading | explicit protective fallback | crossover, smc, trend_breakout and combined expose direction only. Original multi_symbol_robot sends sl=None/tp=None; its stop_loss_pips is a sizing input, not an attached protection rule. Retain existing 2 * ATR(14) SL and 4 * ATR(14) TP. |
+| migration | new entries only | Existing broker positions keep their SL/TP. No stop widening/removal, mass position updates, forecast/time/channel liquidation, risk-budget change, halt reset, ownership change or decision replay. Dynamic/signal exits are not represented as invented static TP prices. |
+
 Every strategy has a stable identity and magic in `Monn/exness_arena/registry.json`. The shared journal attributes deals and positions by original opening ownership and stable position ID, including partial closes and manual exits. Results remain separate by repository and strategy. The tracker exports `results.csv`, `strategies.csv` and `positions.csv` under the local `Monn/.exness-arena/` directory.
 
 ## Operation and documentation
