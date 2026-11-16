@@ -37,6 +37,14 @@ Every position requires a broker-valued server-side stop. Stop removal/widening,
 
 Missing account/history state, unavailable stop valuation, stale quotes, a missing/stale tracker heartbeat (90 seconds), unexpected trial pending orders and ambiguous submissions block new risk. Strategy evaluation failures quarantine only that strategy. Halts, quarantines, loss history and equity baselines never reset automatically on restart or a rule change.
 
+### Connection recovery
+
+Normal runners wait through confirmed MT5 disconnections, including initial startup, and reconnect only to the configured terminal without supplying login credentials or switching accounts. Retry waits are 5, 10, 20 and then 30 seconds repeatedly; each terminal initialization has a 5-second IPC timeout. Recovery rechecks the pinned Exness USC hedging account and automated-trading permissions before a fresh scan. Missing account/terminal state suspends entries. Wrong-account, disabled-automation and unknown operational failures remain fatal; online strategy failures still quarantine that strategy.
+
+The dashboard reports `reconnecting` / `recovering` until a scan completes. The read-only tracker also reconnects and publishes a healthy heartbeat only after a successful collection. Its connection recovery ignores the strategy STOP marker, so monitoring remains independent of a manual trading pause. Runner retry waits check STOP at most every 0.5 seconds, with an in-progress terminal call bounded by its timeout. Preflight/research-once connection failures still return to the caller instead of waiting indefinitely.
+
+Recovery never retries an order, clears a claimed signal bar, replays missed signal bars, edits protection, resets a halt/quarantine, changes risk limits or resets loss/ownership/baseline records. A bar claimed before interruption stays claimed even if its outcome is uncertain. On reconnect the runner refreshes current inventory and closed history, and evaluates only the latest unclaimed closed M15 signal. Scanning and shadow observations can resume while the persistent drawdown halt continues blocking live entries. There is no general crash/Windows-reboot supervisor or automatic halt reset.
+
 ### Stop-loss and take-profit policy
 
 Original protection is used where the source strategy supplies executable price rules. Strategies without standalone price protection retain the explicit existing safety fallback; they are not described as having unique native SL/TP. A missing or invalid supported native stop skips the signal. All levels remain subject to the same broker validation and 3.50 USC risk ceiling; stops are never changed just to force a trade to fit.
@@ -67,6 +75,6 @@ The local Arena dashboard at `http://127.0.0.1:8765/` has separate Overview, Str
 
 Dashboard: http://127.0.0.1:8765 . Runtime settings, account pins, credentials, baseline and journal stay local in `Monn/.exness-arena/` and are excluded from Git. The local settings are authoritative; these guides intentionally omit account identifiers and credentials.
 
-Use `Monn/restart_exness_trial.ps1` for preflight and a controlled restart that preserves broker positions, ownership and loss records. With `Monn` on `PYTHONPATH`, `python -m exness_arena.control pause` blocks new entries and exits strategy runners; server-side stops remain and the tracker continues. Keep Windows and MT5 running. There is no automatic restart or automatic halt reset.
+Use `Monn/restart_exness_trial.ps1` for preflight and a controlled restart that preserves broker positions, ownership and loss records. With `Monn` on `PYTHONPATH`, `python -m exness_arena.control pause` blocks new entries and exits strategy runners; server-side stops remain and the tracker continues. Keep Windows and MT5 running. Confirmed disconnects recover within the running process as described above; other fatal exits require inspection and a controlled restart. Halts never reset automatically.
 
 Whenever trading rules change, update their implementation and this shared policy template, render all five guides with `python Monn/sync_trading_docs.py`, and verify `python Monn/sync_trading_docs.py --check` against the live settings. Update `Monn/STRATEGY_PROFILES.md` and compatibility/registry details when strategy scope changes. Confirm the live dashboard agrees with the intended policy before reporting deployment complete. Commit and push the documentation with the rule change; never publish private runtime files.
